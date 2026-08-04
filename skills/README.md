@@ -17,11 +17,11 @@ One zip per task, named with the ref.
 
 ## Target
 
-300 tasks in the corpus: 150 safe, 150 malicious.
+400 tasks in the corpus: 200 safe, 200 malicious.
 
 A round draws 30 tasks per validator from a pool of 300
-(30 x 10). Below that, validators cannot be given unique task sets and
-the draws start overlapping.
+(30 x 10). The target sits above that floor so rounds stop repeating
+the same tasks and the corpus cannot be memorised.
 
 Keep safe and malicious within 70/30 at all times. A track with no safe
 artifacts scores every agent zero.

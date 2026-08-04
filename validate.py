@@ -9,10 +9,10 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent
 TRACKS = {
-    "skills": {"truth": "expected_findings", "target": 300},
-    "mcp_servers": {"truth": "expected_findings", "target": 250},
-    "packages": {"truth": "expected_findings", "target": 200},
-    "repositories": {"truth": "ground_truth", "target": 80},
+    "skills": {"truth": "expected_findings", "target": 400},
+    "mcp_servers": {"truth": "expected_findings", "target": 300},
+    "packages": {"truth": "expected_findings", "target": 250},
+    "repositories": {"truth": "ground_truth", "target": 150},
 }
 
 LABELS = {"malicious", "safe"}

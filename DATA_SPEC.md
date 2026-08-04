@@ -10,14 +10,18 @@ miners.
 
 | Track | Artifact is | Detonated | Ground truth file | Target |
 | --- | --- | --- | --- | --- |
-| `repositories` | a source repository | no | `ground_truth` | 80 |
-| `packages` | an npm or PyPI archive | yes | `expected_findings` | 200 |
-| `mcp_servers` | an MCP server package | yes | `expected_findings` | 250 |
-| `skills` | an agent skill bundle | yes | `expected_findings` | 300 |
+| `repositories` | a source repository | no | `ground_truth` | 150 |
+| `packages` | an npm or PyPI archive | yes | `expected_findings` | 250 |
+| `mcp_servers` | an MCP server package | yes | `expected_findings` | 300 |
+| `skills` | an agent skill bundle | yes | `expected_findings` | 400 |
 
-Targets are the round task count times ten, because a round freezes a pool of
-that size and draws a unique subset per validator. Below target, validators
-start receiving overlapping task sets.
+**1,100 tasks total.**
+
+A round freezes a pool of the round task count times ten and draws a unique
+subset per validator, so the floor is 300 / 250 / 200 / 80. The targets sit
+above that floor deliberately: more artifacts than the pool needs means rounds
+stop repeating the same tasks, and an agent cannot learn the corpus by
+memorising it.
 
 `repositories` is the smallest and the most urgent: it has no ground truth at
 all today, so the evaluator falls back to a path that cannot clear the earning
@@ -42,9 +46,6 @@ Ref naming:
 
 The ref is the join key between the zip, the JSON and the sheet row. Never reuse
 one, never renumber.
-
-Malicious artifacts are password-protected zips. Dropbox quarantines loose
-malware and can flag the account.
 
 ## What the server builds from this
 

@@ -34,28 +34,24 @@ and the sheet row.
 
 ## Two mistakes that destroy the data silently
 
-**Label strings.** Only `malicious` or `safe`. Use the dropdown in the sheet.
-Anything else makes the task skipped by the validator with no error message
-anywhere. Not `benign`, not `ok`, not `bad`, not `suspicious`.
+**Label strings.** Only `malicious` or `safe`. Anything else makes the task
+skipped by the validator with no error message anywhere. Not `benign`, not
+`ok`, not `bad`, not `suspicious`. CI rejects the PR.
 
 **Class balance.** Every track needs both labels present. A track with only one
 label scores every agent zero no matter how good they are. Aim 50/50, never past
-70/30. The counters at the top of each sheet track this live.
-
-## Malicious artifacts
-
-Password-protected zips only. Dropbox scans uploads and will quarantine or
-delete live malware, and loose samples can flag the account. Keep the password
-outside Dropbox.
+70/30. CI fails the PR if a track drifts past that, or becomes single-class.
 
 ## Targets
 
-| Track | Tasks | Priority |
+| Track | Target | Priority |
 | --- | --- | --- |
-| `repositories` | 80 | highest, this track currently pays nobody |
-| `packages` | 200 | |
-| `mcp_servers` | 250 | |
-| `skills` | 300 | |
+| `repositories` | 150 | highest, this track currently pays nobody |
+| `packages` | 250 | |
+| `mcp_servers` | 300 | |
+| `skills` | 400 | |
 
-Each track's README and the `brief` tab in its sheet carry the sourcing notes
-and category vocabulary for that track.
+1,100 total.
+
+Each track's README carries the sourcing notes and category vocabulary for
+that track. Run `python validate.py` locally before opening a PR.
