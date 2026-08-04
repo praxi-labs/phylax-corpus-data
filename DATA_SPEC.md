@@ -35,7 +35,7 @@ Two files per task, side by side:
     <track>/artifacts/<ref>.expected_findings.json     detonation tracks
     <track>/artifacts/<ref>.ground_truth.json          repositories
 
-Plus one row in `<track>/<track>_tracking.xlsx`.
+Plus one row in `<track>/<track>.csv`.
 
 Ref naming:
 
@@ -59,8 +59,7 @@ one, never renumber.
 
 ## Label
 
-Use `malicious` or `safe`. Nothing else. The sheet enforces this with a
-dropdown.
+Use `malicious` or `safe`. Nothing else. CI rejects any other value.
 
 The scoring code accepts a wider vocabulary (`known_bad`, `unsafe`, `block`,
 `vulnerable`, `known_good`, `allow`, `clean`), but a value outside that list
@@ -86,7 +85,8 @@ Target a 50/50 split per track. Do not go past 70/30 in either direction. This
 is the single most expensive mistake available in this dataset, and it looks
 like nothing until every score in the track flatlines.
 
-The counters at the top of each tracking sheet show this live.
+CI prints the split on every run and fails the build past 70/30 or on a
+single-class track.
 
 ## `expected_findings` — skills, mcp_servers, packages
 
@@ -202,12 +202,12 @@ disagree the entry falls back to the line window.
 
 ## Tracking sheet
 
-One workbook per track, in that track's folder. Columns in this order:
+One CSV per track, in that track's folder. Columns in this order:
 
 | Column | Purpose |
 | --- | --- |
 | `ref` | join key to the zip and the JSON |
-| `label` | dropdown, `malicious` or `safe` |
+| `label` | `malicious` or `safe` |
 | `artifact_file` | zip filename in `artifacts/` |
 | `source` | where the artifact came from, URL or dataset |
 | `source_ref` | CVE, advisory id, commit sha, or package version |
@@ -218,7 +218,8 @@ One workbook per track, in that track's folder. Columns in this order:
 | `verified_by` | second pair of eyes, blank means unreviewed |
 | `notes` | anything the matcher cannot express |
 
-Row 2 of each sheet counts rows, malicious, safe and unverified.
+`python validate.py` prints the per-track totals, the malicious/safe split and
+progress against target. CI runs it on every push and pull request.
 
 `verified_by` matters more than it looks. A wrong label is worse than a missing
 task: it teaches every agent the opposite of the right answer and it penalises
