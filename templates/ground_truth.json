@@ -1,0 +1,24 @@
+{
+  "vulnerabilities": [
+    {
+      "file": "src/db/query.py",
+      "line": 142,
+      "cwe": "CWE-89",
+      "title": "user input concatenated into SQL statement",
+      "description": "the id parameter reaches execute() without parameterisation"
+    }
+  ],
+  "supply_chain": [
+    {
+      "type": "typosquat",
+      "name": "reqeusts"
+    }
+  ],
+  "secrets": [
+    {
+      "file": ".env.example",
+      "line": 3,
+      "type": "aws_access_key"
+    }
+  ]
+}

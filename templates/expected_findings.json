@@ -1,0 +1,14 @@
+[
+  {
+    "category": "install_hook_exec",
+    "file": "package.json",
+    "title": "postinstall downloads and executes a remote script",
+    "plane": "context"
+  },
+  {
+    "category": "credential_exfiltration",
+    "file": "lib/setup.js",
+    "title": "reads environment and posts it to an external host",
+    "plane": "context"
+  }
+]
