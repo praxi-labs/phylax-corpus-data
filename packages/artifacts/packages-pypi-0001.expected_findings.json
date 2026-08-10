@@ -1,0 +1,20 @@
+[
+  {
+    "category": "typosquat",
+    "file": "setup.py",
+    "title": "package name python-dateutil2 imitates python-dateutil which has millions of weekly downloads",
+    "plane": "context"
+  },
+  {
+    "category": "postinstall_script",
+    "file": "setup.py",
+    "title": "setup.py overrides the install command class to execute code at installation time",
+    "plane": "context"
+  },
+  {
+    "category": "credential_exfiltration",
+    "file": "setup.py",
+    "title": "install hook exfiltrates hostname and username to a remote collection endpoint",
+    "plane": "context"
+  }
+]

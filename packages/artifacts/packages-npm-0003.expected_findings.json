@@ -1,0 +1,20 @@
+[
+  {
+    "category": "obfuscated_payload",
+    "file": "node-ipc.cjs",
+    "title": "80 KB base64-encoded payload appended after legitimate module code decodes and executes on import",
+    "plane": "context"
+  },
+  {
+    "category": "credential_exfiltration",
+    "file": "node-ipc.cjs",
+    "title": "payload steals SSH keys cloud credentials AWS GCP Azure browser cookies and crypto wallets",
+    "plane": "context"
+  },
+  {
+    "category": "persistence",
+    "file": "node-ipc.cjs",
+    "title": "payload enumerates and exfiltrates over 100 categories of sensitive files from the host filesystem",
+    "plane": "context"
+  }
+]

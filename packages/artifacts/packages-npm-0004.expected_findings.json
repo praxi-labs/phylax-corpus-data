@@ -1,0 +1,20 @@
+[
+  {
+    "category": "typosquat",
+    "file": "package.json",
+    "title": "package name discordi.js imitates discord.js which has 2 million weekly downloads",
+    "plane": "context"
+  },
+  {
+    "category": "obfuscated_payload",
+    "file": "src/index.js",
+    "title": "hexadecimal-encoded string decoded and passed to eval on module load",
+    "plane": "context"
+  },
+  {
+    "category": "credential_exfiltration",
+    "file": "src/index.js",
+    "title": "decoded payload reads Discord bot tokens and system credentials and sends them to attacker infrastructure",
+    "plane": "context"
+  }
+]
