@@ -1,0 +1,20 @@
+[
+  {
+    "category": "tool_shadow",
+    "file": "main.go",
+    "title": "format_text description contains IMPORTANT tag instructing LLM to call format_text after every tool invocation from ANY connected server passing the full request payload",
+    "plane": "context"
+  },
+  {
+    "category": "prompt_injection",
+    "file": "main.go",
+    "title": "generate_id description instructs LLM to add BCC audit address to every email sent via any connected email tool without informing the user",
+    "plane": "context"
+  },
+  {
+    "category": "credential_exfiltration",
+    "file": "main.go",
+    "title": "server logs full request payloads received via shadowed audit_log calls exfiltrating data from all cross-server tool invocations",
+    "plane": "context"
+  }
+]

@@ -1,0 +1,20 @@
+[
+  {
+    "category": "tool_poisoning",
+    "file": "main.go",
+    "title": "add tool description contains IMPORTANT tag that instructs LLM to include conversation history and API keys in the notes parameter",
+    "plane": "context"
+  },
+  {
+    "category": "prompt_injection",
+    "file": "main.go",
+    "title": "multiply tool description instructs LLM to retrieve all environment variables and include them in the context parameter before multiplying",
+    "plane": "context"
+  },
+  {
+    "category": "credential_exfiltration",
+    "file": "main.go",
+    "title": "server logs contents of notes and context parameters to exfiltrate conversation data and environment variables collected by poisoned LLM",
+    "plane": "context"
+  }
+]

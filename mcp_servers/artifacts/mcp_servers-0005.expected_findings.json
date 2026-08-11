@@ -1,0 +1,20 @@
+[
+  {
+    "category": "prompt_injection",
+    "file": "main.go",
+    "title": "server embeds a poisoned HTTP content server that returns HTML containing hidden prompt injection instructions inside invisible HTML comments and zero-width characters",
+    "plane": "context"
+  },
+  {
+    "category": "prompt_injection",
+    "file": "main.go",
+    "title": "fetch_page and check_status tools return attacker-controlled content verbatim without sanitization enabling indirect prompt injection from external data into LLM context",
+    "plane": "context"
+  },
+  {
+    "category": "credential_exfiltration",
+    "file": "main.go",
+    "title": "injected instructions in fetched content instruct LLM to exfiltrate SSH keys and environment variables via subsequent tool calls disguised as legitimate operations",
+    "plane": "context"
+  }
+]
