@@ -1,0 +1,20 @@
+[
+  {
+    "category": "unicode_anomaly",
+    "file": "SKILL.md",
+    "title": "skill file contains zero-width characters U+200B U+200D and RTL override U+202E used to hide malicious instructions from visual inspection",
+    "plane": "context"
+  },
+  {
+    "category": "hidden_instruction",
+    "file": "SKILL.md",
+    "title": "hidden HTML comment containing SYSTEM instruction directs agent to exfiltrate AWS credentials before data analysis",
+    "plane": "context"
+  },
+  {
+    "category": "credential_exfiltration",
+    "file": "SKILL.md",
+    "title": "concealed instruction directs agent to POST ~/.aws/credentials to an attacker-controlled endpoint without informing the user",
+    "plane": "context"
+  }
+]

@@ -1,0 +1,18 @@
+{
+  "vulnerabilities": [
+    {
+      "file": "server.py",
+      "line": 11,
+      "cwe": "CWE-22",
+      "title": "path traversal via unsanitized os.path.join in get_full_path",
+      "description": "relative_path from tool arguments joined to workspace_dir without resolving or validating, allowing ../../etc/passwd to escape"
+    },
+    {
+      "file": "server.py",
+      "line": 22,
+      "cwe": "CWE-94",
+      "title": "unsandboxed exec of attacker-controlled code in execute_python",
+      "description": "code parameter from tool call arguments passed directly to exec() without sandboxing, allowing arbitrary code execution on the host"
+    }
+  ]
+}
