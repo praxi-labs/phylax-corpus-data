@@ -1,0 +1,20 @@
+[
+  {
+    "category": "obfuscated_payload",
+    "file": "index.js",
+    "title": "AES-256-CBC encrypted payload decrypted and executed at runtime",
+    "plane": "context"
+  },
+  {
+    "category": "install_hook_exec",
+    "file": "package.json",
+    "title": "postinstall script decrypts and executes embedded payload targeting Bitcoin wallets",
+    "plane": "context"
+  },
+  {
+    "category": "credential_exfiltration",
+    "file": "index.js",
+    "title": "decrypted payload targets Copay Bitcoin wallet private keys and mnemonic phrases",
+    "plane": "context"
+  }
+]

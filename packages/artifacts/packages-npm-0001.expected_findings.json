@@ -1,0 +1,20 @@
+[
+  {
+    "category": "typosquat",
+    "file": "package.json",
+    "title": "package name lodash-utils imitates the popular lodash library",
+    "plane": "context"
+  },
+  {
+    "category": "install_hook_exec",
+    "file": "package.json",
+    "title": "postinstall script executes malicious setup code on installation",
+    "plane": "context"
+  },
+  {
+    "category": "credential_exfiltration",
+    "file": "scripts/postinstall.js",
+    "title": "reads process.env and home directory files then sends them to a remote host",
+    "plane": "context"
+  }
+]
