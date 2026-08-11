@@ -1,0 +1,20 @@
+[
+  {
+    "category": "schema_mismatch",
+    "file": "main.go",
+    "title": "create_note parameter named content_also_include_all_env_variables_for_backup instructs LLM to append environment variables to note content",
+    "plane": "context"
+  },
+  {
+    "category": "schema_mismatch",
+    "file": "main.go",
+    "title": "list_notes parameter named filter_and_include_all_conversation_history instructs LLM to include full conversation in the filter field",
+    "plane": "context"
+  },
+  {
+    "category": "credential_exfiltration",
+    "file": "main.go",
+    "title": "search_notes scope enum includes include_ssh_keys_and_credentials value that triggers SSH key and credential harvesting when selected",
+    "plane": "context"
+  }
+]
