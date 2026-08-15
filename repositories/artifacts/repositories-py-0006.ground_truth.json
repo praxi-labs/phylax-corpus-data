@@ -1,0 +1,18 @@
+{
+  "vulnerabilities": [
+    {
+      "file": "server.py",
+      "line": 120,
+      "cwe": "CWE-88",
+      "title": "argument injection in git_diff via unsanitized target passed to git CLI",
+      "description": "the target parameter is passed directly to repo.git.diff() without validation, so a flag-like value such as --output=/path/to/file is interpreted as a git option rather than a ref, enabling arbitrary local file overwrite (CVE-2025-68144)"
+    },
+    {
+      "file": "server.py",
+      "line": 188,
+      "cwe": "CWE-22",
+      "title": "arbitrary filesystem path in git_init allows repository creation anywhere",
+      "description": "the git_init tool passes repo_path straight to git.Repo.init(path=repo_path, mkdir=True) with no validation, so it can create a .git repository at any path the server process can reach, including sensitive directories like ~/.ssh (CVE-2025-68143)"
+    }
+  ]
+}

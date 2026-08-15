@@ -1,0 +1,18 @@
+{
+  "vulnerabilities": [
+    {
+      "file": "app.py",
+      "line": 18,
+      "cwe": "CWE-89",
+      "title": "user input concatenated into SQL statement in get_user route",
+      "description": "the id parameter from request.args reaches execute() via string concatenation without parameterisation, enabling full SQL injection"
+    },
+    {
+      "file": "app.py",
+      "line": 25,
+      "cwe": "CWE-89",
+      "title": "user input concatenated into LIKE clause in search_users route",
+      "description": "the name parameter from request.args is concatenated directly into a LIKE SQL clause without escaping or parameterisation"
+    }
+  ]
+}

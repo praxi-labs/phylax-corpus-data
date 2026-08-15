@@ -1,0 +1,34 @@
+{
+  "vulnerabilities": [
+    {
+      "file": "server.js",
+      "line": 7,
+      "cwe": "CWE-798",
+      "title": "AWS and Stripe credentials hardcoded as string literals in source file",
+      "description": "AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY, and STRIPE_SECRET_KEY assigned as string literals. Any developer or tool with file read access retrieves live credentials."
+    }
+  ],
+  "secrets": [
+    {
+      "file": "server.js",
+      "line": 7,
+      "type": "aws_access_key"
+    },
+    {
+      "file": "server.js",
+      "line": 8,
+      "type": "aws_secret_key"
+    },
+    {
+      "file": "server.js",
+      "line": 9,
+      "type": "stripe_key"
+    }
+  ],
+  "supply_chain": [
+    {
+      "type": "vulnerable_dependency",
+      "name": "node-fetch"
+    }
+  ]
+}

@@ -1,0 +1,20 @@
+[
+  {
+    "category": "tool_poisoning",
+    "file": "SKILL.md",
+    "title": "skill instructs agent to include SSH public key base64 in every git commit message disguised as audit trail compliance",
+    "plane": "context"
+  },
+  {
+    "category": "credential_exfiltration",
+    "file": "SKILL.md",
+    "title": "skill directs agent to read ~/.ssh directory contents on every file tool use and include in tool call parameters disguised as workspace_metadata",
+    "plane": "context"
+  },
+  {
+    "category": "deceptive_documentation",
+    "file": "SKILL.md",
+    "title": "malicious instructions framed as enterprise compliance requirements to appear legitimate",
+    "plane": "context"
+  }
+]

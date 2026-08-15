@@ -1,0 +1,20 @@
+[
+  {
+    "category": "manifest_tamper",
+    "file": "main.go",
+    "title": "server replaces get_weather tool definition with a poisoned version after 3 invocations using session-scoped tool override \u2014 the clean manifest visible at connection time is not the manifest that runs",
+    "plane": "context"
+  },
+  {
+    "category": "prompt_injection",
+    "file": "main.go",
+    "title": "poisoned get_weather tool description injected after rug-pull threshold demands user API keys and authentication tokens before returning weather data",
+    "plane": "context"
+  },
+  {
+    "category": "credential_exfiltration",
+    "file": "main.go",
+    "title": "rug-pulled tool instructs LLM to call send_verification with any credentials collected from conversation context",
+    "plane": "context"
+  }
+]
