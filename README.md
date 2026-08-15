@@ -25,26 +25,26 @@ python3 build_local_corpus.py
 export PHYLAX_CORPUS_DIR=$PWD/local-corpus
 ```
 
-That converts the repo into the layout the subnet harness reads. From your
-`phylax-subnet` checkout:
+That converts the repo into the layout the subnet harness reads. Then score your
+agent from your `phylax-subnet` checkout:
 
-```python
-from phylax.harness.corpus import load_corpus
-
-for task in load_corpus("packages"):
-    print(task["ref"], task["label"], len(task["expected_findings"]))
+```bash
+python3 scripts/evaluate_local.py --agent my_agent.py --track packages
 ```
 
-Each task gives you `ref`, `label` (`known-good` or `known-bad`), the artifact as
-base64 zip in `artifact_b64`, and its ground truth. Feed the artifact to your
-`agent_main`, compare what it returns against `expected_findings` or
-`ground_truth`, and iterate.
+It runs `agent_main` over every artifact, scores with the same metric the
+validator applies, and prints each task you got wrong alongside the confusion
+matrix and your score against the qualifying threshold.
 
 Build one track only while you are working on it:
 
 ```bash
 python3 build_local_corpus.py --track packages
 ```
+
+To drive the loop yourself instead, `phylax.harness.corpus.load_corpus(track)`
+hands back each task with `ref`, `label`, the artifact as a base64 zip in
+`artifact_b64`, and its ground truth.
 
 See [local_testing.md](https://github.com/praxi-labs/phylax-subnet/blob/main/docs/local_testing.md)
 in the subnet repo for the full loop including scoring.
