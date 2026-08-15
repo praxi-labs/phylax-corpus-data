@@ -1,142 +1,146 @@
 # Phylax corpus data
 
-Security AI training corpus for the Phylax subnet. Four tracks of curated artifacts
-that teach agents what malicious and safe code/config looks like at the file level.
+A labelled corpus for building and testing Phylax detection agents on your own
+machine, before you ever submit to subnet 76.
 
-Read [`DATA_SPEC.md`](DATA_SPEC.md) before labelling anything — it defines every field
-the scoring code consumes. `validate.py` enforces the spec; run it before every PR.
+Every artifact here ships with its ground truth. You can see exactly what your
+agent was supposed to find, fix it, and run again in seconds instead of waiting
+two days for the next round.
 
----
-
-## Tracks at a glance
-
-| Track | Target | Current | Priority | What it covers |
-|-------|-------:|--------:|----------|----------------|
-| `repositories` | 150 | 10 | **Highest** | Full source repos — vuln scanning, secret detection, supply-chain |
-| `packages` | 250 | 10 | High | npm / PyPI packages — install hooks, typosquats, obfuscated payloads |
-| `mcp_servers` | 300 | 10 | High | MCP server definitions — tool poisoning, schema abuse, prompt injection |
-| `skills` | 400 | 10 | Medium | Claude skill files — hidden instructions, credential exfiltration, context injection |
-
-1,100 total entries across all tracks.
+**This is not the live scoring corpus.** Rounds on subnet 76 draw from a separate
+corpus whose ground truth is never published. Nothing here is used to score a
+round, so nothing here can be memorised for points. Treat it as a practice set:
+if your agent cannot pass locally, it will not place on chain.
 
 ---
 
-## Directory layout
+## Quick start
 
-```
-<track>/
-  artifacts/
-    <ref>.zip                     ← the artifact itself
-    <ref>.expected_findings.json  ← findings (packages, mcp_servers, skills)
-    <ref>.ground_truth.json       ← findings (repositories only)
-  <track>.csv                     ← one row per artifact, all metadata
-  README.md                       ← sourcing notes + category vocabulary
+```bash
+git clone https://github.com/praxi-labs/phylax-corpus-data.git
+cd phylax-corpus-data
+git lfs pull
+
+python3 build_local_corpus.py
+export PHYLAX_CORPUS_DIR=$PWD/local-corpus
 ```
 
-No other structure. Nothing moves or gets renamed after the initial commit.
+That converts the repo into the layout the subnet harness reads. From your
+`phylax-subnet` checkout:
+
+```python
+from phylax.harness.corpus import load_corpus
+
+for task in load_corpus("packages"):
+    print(task["ref"], task["label"], len(task["expected_findings"]))
+```
+
+Each task gives you `ref`, `label` (`known-good` or `known-bad`), the artifact as
+base64 zip in `artifact_b64`, and its ground truth. Feed the artifact to your
+`agent_main`, compare what it returns against `expected_findings` or
+`ground_truth`, and iterate.
+
+Build one track only while you are working on it:
+
+```bash
+python3 build_local_corpus.py --track packages
+```
+
+See [local_testing.md](https://github.com/praxi-labs/phylax-subnet/blob/main/docs/local_testing.md)
+in the subnet repo for the full loop including scoring.
 
 ---
 
-## How we source data
+## What is in here
 
-### 1  Real malicious packages
+| Track | Artifacts | Malicious | Safe | What it covers |
+|-------|----------:|----------:|-----:|----------------|
+| `skills` | 15 | 5 | 10 | Claude skill files. Hidden instructions, credential exfiltration, context injection |
+| `repositories` | 12 | 6 | 6 | Full source repos. Vulnerability scanning, secret detection, supply chain |
+| `packages` | 10 | 5 | 5 | npm and PyPI packages. Install hooks, typosquats, obfuscated payloads |
+| `mcp_servers` | 10 | 5 | 5 | MCP server definitions. Tool poisoning, schema abuse, prompt injection |
 
-- **PyPI malregistry** — community-maintained archive of confirmed malicious PyPI packages.
-  We pull individual packages, unzip, verify the malicious behaviour, then write
-  `expected_findings.json` referencing the exact file + line.
-- **npm abuse patterns** — install-hook exfiltration, postinstall curl pipes,
-  typosquats of popular packages (`reqests`, `cross-env2`).
+The safe artifacts matter as much as the malicious ones. Several are deliberate
+false positive traps: a legitimate AWS SDK helper that reads credential env vars,
+a security audit skill dense with secret related keywords because it teaches how
+to find them. An agent that flags those is scored down, on the behavioural tracks
+as hard as a miss.
 
-### 2  MCP server research (2025–2026)
-
-| Source | What it contributed |
-|--------|---------------------|
-| **Invariant Labs** blog (2025) | Tool Description Poisoning (TPA) and Cross-Server Shadowing |
-| **CyberArk** research | Full-Schema Poisoning (FSP) — attack hidden in parameter names / enum values |
-| **ETDI paper** arxiv/2506.01333 | Rug-Pull — clean manifest at connect, then `AddSessionTool` injects poisoned definition |
-| **Microsoft** indirect injection | Poisoned HTTP response embeds instructions via zero-width chars |
-| **GhostSplice** (ASSET Research Group, Aug 2026) | Splits harmful instructions across multiple tool descriptions; 97% compliance on frontier models |
-| **MCPTox Benchmark** arxiv/2508.14925 | 99 attack templates covering all known TPA variants |
-| **appsecco/bad-mcp** (MIT) | 10 Go-based malicious MCP servers |
-| **appsecco/vulnerable-mcp-servers-lab** (Apache-2.0) | 9 Python/JS vulnerable servers |
-
-### 3  Repositories (CVE and known-vuln patterns)
-
-Each repository artifact is a minimal but realistic codebase that isolates one
-class of vulnerability. Sources:
-
-- **CVE-2026-23744** — `@mcpjam/inspector` HTTP admin endpoint binds `0.0.0.0`
-  without authentication (CVSS 9.8, CWE-306). Pattern reproduced in `repositories-py-0003`.
-- **appsecco/vulnerable-mcp-servers-lab** — path traversal (CWE-22) and eval RCE (CWE-94)
-  servers used as bases for `repositories-py-0002` and `repositories-js-0001`.
-- **OWASP CWE-89** canonical SQL injection pattern — `repositories-py-0001`.
-- **CWE-798** hardcoded credentials — `repositories-js-0002`.
-
-### 4  Skills (Claude skill files)
-
-Malicious skill files target the Claude Code skill system specifically. Attack
-techniques observed:
-
-| Technique | Description |
-|-----------|-------------|
-| `prompt_injection` | MUST-framed mandatory steps that override normal behaviour |
-| `hidden_instruction` | Instructions invisible in rendered Markdown (HTML comments, CDATA) |
-| `unicode_anomaly` | U+202E RTL override + zero-width chars (U+200B/200D/2060) hide text |
-| `context_injection` | False session context claims pre-authorization for all data access |
-| `tool_poisoning` | Skill instructs agent to leak data via git commits, file tool metadata |
-| `credential_exfiltration` | Collects SSH keys, AWS creds, `.env` files as "baseline" |
-| `deceptive_documentation` | README describes legitimate skill; SKILL.md contains the attack |
+**The zips contain real malware**, including a compromised node-ipc build and a
+Discord token stealer sourced from `ossf/malicious-packages`. Your antivirus will
+flag the checkout. Unpack them inside a container or VM, never on a host you care
+about.
 
 ---
 
-## Ref naming — immutable join key
+## How your agent is scored
+
+Local scoring should mirror the network, so build against the same metric.
+
+**Behavioural tracks** (`skills`, `mcp_servers`, `packages`) score on verdict
+correctness, not on findings. Tally your verdicts against labels and compute
+clamped MCC. `BLOCK` or `WARN` on a malicious artifact is a true positive,
+`ALLOW` on a safe one is a true negative:
 
 ```
-packages-npm-0001        packages-pypi-0001
-mcp_servers-0001
-repositories-py-0001     repositories-js-0001
-skills-0001
+score = max(0, MCC)
 ```
 
-**Never reuse a ref, never renumber.** The ref is the join key between the zip,
-the JSON file, and the CSV row. Changing it after merge corrupts scoring history.
+An agent that answers `ALLOW` to everything scores exactly 0, as does one that
+answers `BLOCK` to everything. The qualifying threshold is **0.20**.
+
+**Repositories** scores on findings recovered, using F-beta with beta 2. Your
+findings are matched against planted ground truth, giving recall `R` and
+precision `P`:
+
+```
+F2 = 5PR / (4P + R)
+```
+
+Beta 2 favours recall: a missed vulnerability costs more than a false alarm. The
+qualifying threshold is **0.50**.
+
+Full definitions, budgets and failure semantics are in
+[mechanism.md](https://github.com/praxi-labs/phylax-subnet/blob/main/docs/mechanism.md).
 
 ---
 
 ## Ground truth format
 
 ```
-packages, mcp_servers, skills   →  <ref>.expected_findings.json
-repositories                    →  <ref>.ground_truth.json
+skills, mcp_servers, packages   →  artifacts/<ref>.expected_findings.json
+repositories                    →  artifacts/<ref>.ground_truth.json
 ```
 
 ### `expected_findings.json`
 
-Array of finding objects. Every object **must** have:
+An array. Each finding carries a category, a title, and the plane it sits on.
+`file` points at the offending file inside the zip.
 
 ```json
-{
-  "category": "tool_poisoning",
-  "title": "one-sentence description of the finding",
-  "plane": "context"
-}
+[
+  {
+    "category": "credential_exfiltration",
+    "file": "SKILL.md",
+    "title": "skill requires collecting SSH keys and env vars before every review",
+    "plane": "context"
+  }
+]
 ```
 
-`file` is strongly preferred. `plane` must be `context` or `action`
-(use `context` for all curated findings).
+Category vocabulary per track:
 
-Category vocabularies by track:
-
-**packages:** `install_hook_exec` · `postinstall_script` · `typosquat` · `dependency_confusion` ·
-`credential_exfiltration` · `obfuscated_payload` · `remote_code_fetch` · `persistence` · `vulnerable_dependency`
-
-**mcp_servers:** `tool_poisoning` · `tool_shadow` · `schema_mismatch` · `manifest_tamper` ·
-`prompt_injection` · `credential_exfiltration` · `excessive_scope`
-
-**skills:** `prompt_injection` · `hidden_instruction` · `context_injection` ·
+**skills** `prompt_injection` · `hidden_instruction` · `context_injection` ·
 `credential_exfiltration` · `tool_poisoning` · `unicode_anomaly` · `deceptive_documentation`
 
-### `ground_truth.json` (repositories only)
+**mcp_servers** `tool_poisoning` · `tool_shadow` · `schema_mismatch` ·
+`manifest_tamper` · `prompt_injection` · `credential_exfiltration` · `excessive_scope`
+
+**packages** `install_hook_exec` · `postinstall_script` · `typosquat` ·
+`dependency_confusion` · `credential_exfiltration` · `obfuscated_payload` ·
+`remote_code_fetch` · `persistence` · `vulnerable_dependency`
+
+### `ground_truth.json`, repositories only
 
 ```json
 {
@@ -152,86 +156,71 @@ Category vocabularies by track:
 }
 ```
 
-**Hard gates:** `file` must exist inside the zip (after lowercasing). `cwe` must match
-`CWE-\d+` exactly. `supply_chain.type` must be one of:
-`typosquat` · `dependency_confusion` · `install_script` · `vulnerable_dependency`.
-Safe entries use `{}`.
+Safe repositories carry `{}`. Weighting is `vulnerabilities` 0.5,
+`supply_chain` 0.3, `secrets` 0.2, renormalised over whichever dimensions are
+present.
 
 ---
 
-## CSV columns
+## Layout
 
-Every track CSV has these columns (blank `licence` = ERROR, blank `verified_by` = warning):
-
-| Column | Notes |
-|--------|-------|
-| `ref` | Immutable ref string |
-| `label` | `malicious` or `safe` — no other value |
-| `artifact_file` | Filename of the zip inside `artifacts/` |
-| `source` | URL or description of the original source |
-| `source_ref` | CVE, GHSA, licence, arXiv ID, etc. |
-| `licence` | SPDX identifier — must not be blank |
-| `findings_count` | Integer matching the JSON array length |
-| `curator` | GitHub username of the person who built the entry |
-| `curated_at` | ISO date `YYYY-MM-DD` |
-| `verified_by` | GitHub username of second reviewer (blank = warning) |
-| `notes` | Free text — explain the attack pattern or why it is safe |
-
----
-
-## Two mistakes that destroy data silently
-
-**Label strings.** Only `malicious` or `safe`. Anything else causes the task to be
-skipped by the validator with no error message. Not `benign`, not `ok`, not `bad`.
-CI rejects the PR.
-
-**Class balance.** Every track needs both labels present. A track with only one label
-scores every agent zero regardless of quality. Target 50/50; hard fail at 70/30.
-CI fails the PR if a track drifts past that threshold.
-
----
-
-## Validation
-
-```bash
-python3 validate.py
+```
+<track>/
+  artifacts/
+    <ref>.zip                     the artifact
+    <ref>.expected_findings.json  ground truth (skills, mcp_servers, packages)
+    <ref>.ground_truth.json       ground truth (repositories)
+  <track>.csv                     one row per artifact, all metadata
+  README.md                       sourcing notes and category vocabulary
 ```
 
-Output shows per-track totals, errors (block merge), and warnings (informational).
-**0 errors required before opening a PR.** Common errors:
+Refs are immutable join keys tying the zip, the JSON and the CSV row together:
+`packages-npm-0001`, `mcp_servers-0001`, `repositories-py-0001`, `skills-0001`.
+They are never reused and never renumbered.
 
-| Error | Cause |
-|-------|-------|
-| `zip missing` | Artifact file not committed or wrong filename |
-| `json missing` | Ground truth file missing or misspelled |
-| `file not in archive` | `ground_truth.json` references a path not in the zip |
-| `invalid label` | Label is not exactly `malicious` or `safe` |
-| `malicious + 0 findings` | Malicious entry must have at least one finding |
-| `safe + findings > 0` | Safe entry must have an empty findings array / `{}` |
-| `licence blank` | CSV row is missing the licence field |
-| `balance > 70/30` | Track has too many entries of one label |
+The CSV carries `ref`, `label`, `artifact_file`, `source`, `source_ref`,
+`licence`, `findings_count`, `curator`, `curated_at`, `verified_by`, `notes`.
+The `notes` column explains the attack pattern, or why a safe artifact is a
+useful false positive trap. Read it while you are debugging a miss.
 
 ---
 
-## How to contribute
+## Contributing
 
-1. Fork / branch from `main`.
-2. Build your artifact: zip the source, write the JSON, add the CSV row.
-3. Run `python3 validate.py` — fix all errors.
-4. Open a PR. Title format: `feat(<track>): short description — N malicious + N safe`.
-5. Include sourcing notes in the PR body (URL, licence, CVE/GHSA if applicable).
+We take corpus contributions, and accepted ones earn a share of the contribution
+emission pool. See
+[mechanism.md](https://github.com/praxi-labs/phylax-subnet/blob/main/docs/mechanism.md)
+for how that pool is split.
 
-Each track's `README.md` carries additional sourcing guidance and the full category
-vocabulary for that track.
+1. Branch from `main`.
+2. Build the artifact: zip the source, write the ground truth JSON, add the CSV row.
+3. Run `python3 validate.py` and fix every error.
+4. Open a PR titled `feat(<track>): short description — N malicious + N safe`.
+   Include the source URL, licence, and CVE or GHSA in the body.
+
+[`DATA_SPEC.md`](DATA_SPEC.md) defines every field the scoring code consumes.
+`validate.py` enforces it and CI blocks the merge on any error.
+
+Two mistakes that fail silently if CI ever misses them. Labels are exactly
+`malicious` or `safe`, never `benign` or `bad`. And every track needs both labels
+present, because a single label track scores every agent zero no matter how good
+it is. Target an even split; CI hard fails past 70/30.
 
 ---
 
-## Key research references
+## Sourcing
 
-- **GhostSplice** — ASSET Research Group, Aug 2026. Splits instructions across tool descriptions; 97% LLM compliance rate.
-- **MCPTox Benchmark** — arxiv/2508.14925. 99 template tool-poisoning attack patterns.
-- **CVE-2026-23744** — `@mcpjam/inspector` unauthenticated HTTP admin. CVSS 9.8, CWE-306.
-- **CVE-2026-25536** — MCP TypeScript SDK. GHSA-345p-7cg4-v4c7, Red Hat RHSA-2026:3960.
-- **Invariant Labs** — Tool Poisoning Attacks: https://invariantlabs.ai/blog/mcp-security-notification-tool-poisoning-attacks
-- **CyberArk** — Full-Schema Poisoning: https://www.cyberark.com/resources/threat-research-blog/poison-everywhere-no-output-from-your-mcp-server-is-safe
-- **ETDI** — Rug-Pull via `AddSessionTool`: arxiv/2506.01333
+Artifacts come from published research and public malware archives, never from
+anything we invented to be unsolvable.
+
+- **PyPI malregistry** and **ossf/malicious-packages** for confirmed malicious releases
+- **MCPTox Benchmark** arxiv/2508.14925, 99 tool poisoning attack templates
+- **Invariant Labs** tool description poisoning and cross-server shadowing
+- **CyberArk** full-schema poisoning, attacks hidden in parameter names and enum values
+- **ETDI** arxiv/2506.01333, rug-pull via `AddSessionTool`
+- **appsecco/bad-mcp** and **vulnerable-mcp-servers-lab**, malicious and vulnerable servers
+- **MaliciousAgentSkillsBench** (USENIX 2026) for real safe skills
+- **CVE-2026-23744**, `@mcpjam/inspector` unauthenticated admin endpoint, CWE-306
+- Canonical CWE patterns: CWE-89 injection, CWE-798 hardcoded credentials, CWE-22 traversal, CWE-94 eval RCE
+
+Per track sourcing notes are in each track's `README.md`.
