@@ -1,0 +1,11 @@
+{
+  "vulnerabilities": [
+    {
+      "file": "routes/auth.py",
+      "line": 7,
+      "cwe": "CWE-601",
+      "title": "open redirect in routes/auth.py",
+      "description": "user-supplied redirect target is used without same-origin validation"
+    }
+  ]
+}

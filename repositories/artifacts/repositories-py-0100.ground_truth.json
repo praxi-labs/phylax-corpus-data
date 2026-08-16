@@ -1,0 +1,11 @@
+{
+  "vulnerabilities": [
+    {
+      "file": "routes/accounts.py",
+      "line": 9,
+      "cwe": "CWE-89",
+      "title": "SQL injection in routes/accounts.py",
+      "description": "user input reaches execute() through string formatting without parameterisation"
+    }
+  ]
+}

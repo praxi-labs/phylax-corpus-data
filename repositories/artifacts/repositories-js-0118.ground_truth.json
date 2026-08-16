@@ -1,0 +1,11 @@
+{
+  "vulnerabilities": [
+    {
+      "file": "routes/accounts.js",
+      "line": 5,
+      "cwe": "CWE-89",
+      "title": "SQL injection in routes/accounts.js",
+      "description": "user input reaches execute() through string formatting without parameterisation"
+    }
+  ]
+}

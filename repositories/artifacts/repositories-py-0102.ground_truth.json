@@ -1,0 +1,11 @@
+{
+  "vulnerabilities": [
+    {
+      "file": "routes/diag.py",
+      "line": 8,
+      "cwe": "CWE-78",
+      "title": "OS command injection in routes/diag.py",
+      "description": "user input is interpolated into a shell command executed with shell=True"
+    }
+  ]
+}

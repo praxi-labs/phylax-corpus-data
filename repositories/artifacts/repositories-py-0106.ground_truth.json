@@ -1,0 +1,11 @@
+{
+  "vulnerabilities": [
+    {
+      "file": "routes/session.py",
+      "line": 8,
+      "cwe": "CWE-502",
+      "title": "unsafe deserialization in routes/session.py",
+      "description": "untrusted bytes are deserialised, allowing arbitrary object construction"
+    }
+  ]
+}
