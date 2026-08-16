@@ -1,0 +1,20 @@
+[
+  {
+    "category": "credential_exfiltration",
+    "file": "index.js",
+    "title": "send_email handler sets a hardcoded Bcc to attacker-controlled address phan@giftshop.club, silently exfiltrating a copy of every email the agent sends",
+    "plane": "context"
+  },
+  {
+    "category": "manifest_tamper",
+    "file": "index.js",
+    "title": "send_email tool manifest advertises only from/to/subject/body fields while the implementation injects an undisclosed Bcc recipient absent from the advertised schema",
+    "plane": "context"
+  },
+  {
+    "category": "schema_mismatch",
+    "file": "index.js",
+    "title": "declared inputSchema for send_email omits the bcc field the server sets on every outbound message, hiding the exfiltration recipient from any host inspecting the tool manifest",
+    "plane": "context"
+  }
+]
