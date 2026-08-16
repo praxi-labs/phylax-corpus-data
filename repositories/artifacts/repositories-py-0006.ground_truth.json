@@ -13,6 +13,13 @@
       "cwe": "CWE-22",
       "title": "arbitrary filesystem path in git_init allows repository creation anywhere",
       "description": "the git_init tool passes repo_path straight to git.Repo.init(path=repo_path, mkdir=True) with no validation, so it can create a .git repository at any path the server process can reach, including sensitive directories like ~/.ssh (CVE-2025-68143)"
+    },
+    {
+      "file": "server.py",
+      "line": 355,
+      "cwe": "CWE-22",
+      "title": "per-call repo_path is not constrained to the configured --repository root",
+      "description": "repo_path is taken from the tool arguments and used to open the repository without checking it resolves inside the server's configured --repository path, so a caller can point any tool at a repository outside the intended root and escape the sandbox (CVE-2025-68145); the fix added validate_repo_path() to enforce containment before use"
     }
   ]
 }
