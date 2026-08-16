@@ -1,0 +1,11 @@
+{
+  "vulnerabilities": [
+    {
+      "file": "routes/calc.py",
+      "line": 7,
+      "cwe": "CWE-94",
+      "title": "code injection in routes/calc.py",
+      "description": "user input is evaluated as code"
+    }
+  ]
+}

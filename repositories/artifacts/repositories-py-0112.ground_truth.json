@@ -1,0 +1,11 @@
+{
+  "vulnerabilities": [
+    {
+      "file": "routes/intake.py",
+      "line": 8,
+      "cwe": "CWE-611",
+      "title": "XML external entity in routes/intake.py",
+      "description": "XML is parsed with entity resolution enabled on untrusted input"
+    }
+  ]
+}

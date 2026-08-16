@@ -1,0 +1,11 @@
+{
+  "vulnerabilities": [
+    {
+      "file": "routes/preview.py",
+      "line": 8,
+      "cwe": "CWE-918",
+      "title": "server-side request forgery in routes/preview.py",
+      "description": "user-supplied URL is fetched without host allow-listing"
+    }
+  ]
+}

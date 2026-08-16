@@ -1,0 +1,11 @@
+{
+  "vulnerabilities": [
+    {
+      "file": "routes/files.py",
+      "line": 10,
+      "cwe": "CWE-22",
+      "title": "path traversal in routes/files.py",
+      "description": "user-supplied path is joined to a base directory without containment check"
+    }
+  ]
+}

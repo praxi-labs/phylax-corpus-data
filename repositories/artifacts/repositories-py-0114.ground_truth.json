@@ -1,0 +1,11 @@
+{
+  "vulnerabilities": [
+    {
+      "file": "auth/hashing.py",
+      "line": 7,
+      "cwe": "CWE-327",
+      "title": "weak password hashing in auth/hashing.py",
+      "description": "password is hashed with a fast unsalted digest"
+    }
+  ]
+}
